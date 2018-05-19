@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 
-import json, os
+import json, os, subprocess, sys
 
 commented_lines = []
 
@@ -56,12 +56,11 @@ def check_paths(paths_file):
         paths = json.load(f)
         paths = paths['paths']
 
-	for path in paths:
-		if len(path) < 1 or not os.path.isfile(path):
-			print('%s does not exist in the filesystem' % (path))
-			continue
-
-		return path
+        for path in paths:
+            if len(path) < 1 or not os.path.isfile(path):
+                print('%s does not exist in the filesystem' % (path))
+                continue
+            return path
 
 def locate_hosts():
     paths_config = None
@@ -69,6 +68,9 @@ def locate_hosts():
         paths_config = 'win_paths.json'
         hosts_file = check_paths(paths_config)
     elif os.name == 'posix':
+        if os.geteuid() != 0:
+            print('You are not running as root!')
+            subprocess.call(['sudo', 'python', sys.argv[0]])
         paths_config = 'nix_paths.json'
         check_paths(paths_config)
         hosts_file = check_paths(paths_config)
