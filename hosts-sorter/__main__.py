@@ -10,7 +10,10 @@ def update_hosts(hosts_file, commented_lines, sorted_lines):
             f.write(commented_line)
         for sorted_line in sorted_lines:
             if len(sorted_line[0]) < 9:
-                f.write('\t%s\t\t\t\t%s\n' % (sorted_line[0], sorted_line[1]))
+                if len(sorted_line[0]) > 6:
+                    f.write('\t%s\t\t\t%s\n' % (sorted_line[0], sorted_line[1])) if len(sorted_line[0]) == 7 else f.write('\t%s\t\t%s\n' % (sorted_line[0], sorted_line[1]))
+                else:
+                    f.write('\t%s\t\t\t\t%s\n' % (sorted_line[0], sorted_line[1]))
             elif len(sorted_line[0]) > 9:
                 f.write('\t%s\t%s\n' % (sorted_line[0], sorted_line[1]))
             else:
