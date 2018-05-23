@@ -50,33 +50,27 @@ def get_sorted(hosts_file):
         sorted_lines = unique_lines
     return sorted(sorted_lines, key=lambda sorted_line: sorted_line[1])
 
-def check_paths(paths_file):
-    if not os.path.isfile(paths_file):
-        print('%s does not exist in the filesystem' % (paths_file))
+def get_hosts_path(hosts_path):
+    if not hosts_path:
+        print('hosts_path has been not passed')
         return
 
-    with open(paths_file, 'r') as f:
-        paths = json.load(f)
-        paths = paths['paths']
+    if not os.path.isfile(hosts_path):
+        print('%s does not exist in the filesystem' % (hosts_path))
+        return
 
-        for path in paths:
-            if len(path) < 1 or not os.path.isfile(path):
-                print('%s does not exist in the filesystem' % (path))
-                continue
-            return path
+    return hosts_path
 
 def locate_hosts():
-    paths_config = None
     if os.name == 'nt':
-        paths_config = 'win_paths.json'
-        hosts_file = check_paths(paths_config)
+        hosts_location = 'C:/Windows/System32/drivers/etc/hosts'
+        hosts_file = get_hosts_path(hosts_location)
     elif os.name == 'posix':
         if os.geteuid() != 0:
             print('You are not running as root!')
             subprocess.call(['sudo', 'python', sys.argv[0]])
-        paths_config = 'nix_paths.json'
-        check_paths(paths_config)
-        hosts_file = check_paths(paths_config)
+        hosts_location = '/etc/hosts'
+        hosts_file = get_hosts_path(hosts_location)
     return hosts_file
 
 hosts_file = locate_hosts()
